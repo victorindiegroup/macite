@@ -3,1087 +3,457 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Ma Cité</title>
+<title>Chronique des Empires</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#b8462b">
+<meta name="theme-color" content="#1a1410">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Ma Cité">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chronique">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,800&family=Spectral:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --parchment: #f1e7d0;
-    --parchment-dark: #e3d4b1;
-    --ink: #1f1a14;
-    --ink-soft: #4a3f30;
-    --terracotta: #b8462b;
-    --terracotta-deep: #8a3320;
-    --gold: #b88a2e;
-    --moss: #5b7a3a;
-    --moss-deep: #3f5527;
-    --wine: #6b2a3a;
-    --line: rgba(31, 26, 20, 0.18);
+    --paper: #f4ecd8;
+    --paper-2: #ebe0c4;
+    --ink: #2a2218;
+    --ink-soft: #5a4a36;
+    --gold: #b8923a;
+    --rust: #a04830;
+    --moss: #4a6b3a;
+    --sea: #4a6f7d;
+    --line: rgba(42, 34, 24, 0.18);
+
+    --plain: #cbb878;
+    --forest: #6a8a4a;
+    --hill: #a89060;
+    --mountain: #6e6358;
+    --desert: #d9c285;
+    --water: #6e9aa8;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { overscroll-behavior: none; }
-
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
   body {
-    font-family: 'Spectral', Georgia, serif;
-    background: var(--parchment);
+    font-family: 'Inter', sans-serif;
+    background: var(--paper);
     color: var(--ink);
-    min-height: 100vh;
-    font-size: 16px;
-    line-height: 1.5;
-    background-image:
-      radial-gradient(ellipse at top, rgba(184, 138, 46, 0.08), transparent 60%),
-      radial-gradient(ellipse at bottom, rgba(107, 42, 58, 0.05), transparent 50%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    font-size: 15px;
     -webkit-font-smoothing: antialiased;
+    user-select: none;
   }
 
-  .num { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+  .serif { font-family: 'Cormorant Garamond', serif; }
+  .num { font-variant-numeric: tabular-nums; }
 
-  /* === Splash === */
-  .splash {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 32px 24px;
-    text-align: center;
+  /* ============== SPLASH / CIV CHOICE — thème épique or/sombre ============== */
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  #splash {
+    padding: 24px 22px 28px;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow-y: auto;
+    background:
+      radial-gradient(ellipse at 50% 30%, #1f1812 0%, #0c0907 70%) ;
+    color: #e8dcc0;
   }
-  .splash .crest {
-    font-family: 'Fraunces', serif;
-    font-weight: 800;
-    font-size: 72px;
-    line-height: 0.9;
-    color: var(--terracotta);
-    letter-spacing: -0.04em;
-    margin-bottom: 8px;
+  #splash .hero {
+    width: 60vw; max-width: 240px; aspect-ratio: 1;
+    margin: 12px auto 18px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+      0 12px 50px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(212,168,71,0.4),
+      0 0 80px rgba(212,168,71,0.08);
+    background: #0c0907;
   }
-  .splash .crest em {
+  #splash .hero img { width: 100%; height: 100%; display: block; }
+
+  #splash .top { text-align: center; padding: 0 4px; }
+  .title-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em;
+    color: #f4ecd8;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.6);
+  }
+  .title-main em {
     font-style: italic;
-    color: var(--ink);
-    font-weight: 300;
+    color: #d4a847;
+    background: linear-gradient(180deg, #f0cf78 0%, #c08c2a 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  .splash .tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 48px;
+  .subtitle {
+    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: rgba(212,168,71,0.7); margin-top: 14px;
+    font-weight: 500;
   }
-  .splash p {
-    max-width: 320px;
-    color: var(--ink-soft);
-    margin-bottom: 32px;
-    font-size: 17px;
+  .subtitle::before, .subtitle::after {
+    content: '·'; margin: 0 10px; color: rgba(212,168,71,0.5);
   }
-  .splash input {
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid var(--ink);
-    font-family: 'Fraunces', serif;
-    font-size: 28px;
-    font-weight: 600;
+
+  #splash .choose-label {
+    text-align: center; font-size: 11px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: rgba(232,220,192,0.5);
+    margin: 22px 12px 14px;
+  }
+
+  .civs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .civ-card {
+    background: rgba(244, 236, 216, 0.04);
+    border: 1.5px solid rgba(212, 168, 71, 0.25);
+    padding: 14px 10px 12px;
     text-align: center;
-    padding: 12px 8px;
-    width: 280px;
-    color: var(--ink);
-    outline: none;
-    margin-bottom: 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
   }
-  .splash input::placeholder { color: rgba(31, 26, 20, 0.3); font-style: italic; font-weight: 300; }
+  .civ-card:hover, .civ-card:active {
+    background: rgba(244, 236, 216, 0.08);
+    border-color: rgba(212, 168, 71, 0.5);
+  }
+  .civ-card.selected {
+    border-color: #d4a847;
+    background: rgba(212, 168, 71, 0.12);
+    box-shadow: 0 0 0 1px rgba(212,168,71,0.3), 0 6px 24px rgba(0,0,0,0.5);
+  }
+  .civ-card .emblem,
+  .civ-card svg:not(.cname svg) { width: 48px; height: 48px; margin: 0 auto 6px; display: block; }
+  .civ-card .cname {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 700;
+    color: #f4ecd8;
+  }
+  .civ-card.selected .cname { color: #f0cf78; }
+  .civ-card .cdesc {
+    font-size: 11px; color: rgba(232,220,192,0.55);
+    margin-top: 3px; line-height: 1.3;
+  }
 
   .btn {
-    background: var(--ink);
-    color: var(--parchment);
-    border: none;
-    padding: 16px 32px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    background: var(--ink); color: var(--paper);
+    border: none; padding: 16px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+    width: 100%;
   }
-  .btn:active { transform: translateY(1px); }
-  .btn.primary { background: var(--terracotta); }
-  .btn.primary:disabled { background: rgba(31, 26, 20, 0.2); color: rgba(241, 231, 208, 0.6); cursor: not-allowed; }
-  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn.primary {
+    background: linear-gradient(180deg, #d4a847 0%, #a07a28 100%);
+    color: #1a1410;
+    box-shadow: 0 4px 18px rgba(212,168,71,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn.primary:hover:not(:disabled) {
+    background: linear-gradient(180deg, #e6ba52 0%, #b48830 100%);
+  }
+  .btn.primary:disabled {
+    background: rgba(244,236,216,0.08);
+    color: rgba(244,236,216,0.3);
+    box-shadow: none;
+  }
+  .btn.ghost {
+    background: transparent;
+    color: rgba(232,220,192,0.7);
+    border: 1.5px solid rgba(212,168,71,0.4);
+  }
+  .btn.ghost:hover { color: #f4ecd8; border-color: #d4a847; }
+  .btn.small { padding: 10px 14px; font-size: 10px; width: auto; }
 
-  /* === App === */
-  .app { display: none; padding-bottom: 100px; }
-  .app.active { display: block; }
+  /* ============== GAME ============== */
+  #game { display: none; }
+  #game.active { display: flex; }
 
-  /* Header */
-  .topbar {
-    padding: 24px 20px 16px;
+  /* Top HUD */
+  .hud-top {
+    background: var(--paper);
     border-bottom: 1px solid var(--line);
-    background: var(--parchment);
-    position: sticky;
-    top: 0;
+    padding: 8px 12px;
+    display: flex; justify-content: space-between; align-items: center;
     z-index: 10;
   }
-  .topbar-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+  .hud-civ { display: flex; align-items: center; gap: 8px; }
+  .hud-civ .emblem-mini { width: 28px; height: 28px; }
+  .hud-civ .ctitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-weight: 700; line-height: 1;
   }
-  .city-name {
-    font-family: 'Fraunces', serif;
-    font-weight: 800;
-    font-size: 28px;
-    letter-spacing: -0.02em;
-    line-height: 1;
+  .hud-civ .era {
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft);
   }
-  .meta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-  }
-  .era-badge {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 3px 8px;
-    background: var(--ink);
-    color: var(--parchment);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
+  .hud-turn { text-align: right; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft); }
+  .hud-turn .num { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: 0; }
 
-  /* Resources */
-  .resources {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+  /* Resources strip */
+  .hud-res {
+    background: var(--paper-2);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     border-bottom: 1px solid var(--line);
   }
-  .res {
-    padding: 16px 8px 14px;
+  .hud-res .r {
+    padding: 6px 4px;
     text-align: center;
     border-right: 1px solid var(--line);
-    position: relative;
   }
-  .res:last-child { border-right: none; }
-  .res-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 4px;
-  }
-  .res-value {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 22px;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-  .res-rate {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--moss);
-    margin-top: 3px;
-  }
-  .res-rate.bad { color: var(--terracotta); }
-  .res-cap {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: rgba(31, 26, 20, 0.4);
-  }
+  .hud-res .r:last-child { border-right: none; }
+  .r-label { font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft); }
+  .r-val { font-size: 14px; font-weight: 700; line-height: 1.1; }
+  .r-rate { font-size: 9px; color: var(--moss); margin-top: 1px; }
+  .r-rate.bad { color: var(--rust); }
 
-  /* Action points */
-  .ap-bar {
-    padding: 14px 20px;
-    background: var(--parchment-dark);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--line);
-  }
-  .ap-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .ap-dots { display: flex; gap: 6px; }
-  .ap-dot {
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--ink);
-    background: transparent;
-  }
-  .ap-dot.full { background: var(--terracotta); border-color: var(--terracotta); }
-  .ap-timer { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); }
-
-  /* Section */
-  .section {
-    padding: 24px 20px 8px;
-  }
-  .section-title {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 400;
-    font-size: 14px;
-    letter-spacing: 0.05em;
-    color: var(--ink-soft);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-title::after {
-    content: '';
+  /* Map */
+  .map-wrap {
     flex: 1;
-    height: 1px;
-    background: var(--line);
+    position: relative;
+    overflow: hidden;
+    background: #d6c8a8;
   }
+  #mapSvg {
+    position: absolute; top: 0; left: 0;
+    transform-origin: 0 0;
+    cursor: grab;
+  }
+  #mapSvg.grabbing { cursor: grabbing; }
 
-  /* Buildings */
-  .building {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    gap: 14px;
+  /* Bottom panel : contenu dynamique */
+  .panel {
+    background: var(--paper);
+    border-top: 2px solid var(--ink);
+    padding: 12px 14px 14px;
+    max-height: 50vh;
+    overflow-y: auto;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 5;
   }
-  .b-icon {
-    width: 44px;
-    height: 44px;
-    display: grid;
-    place-items: center;
-    background: var(--parchment-dark);
-    flex-shrink: 0;
-    font-size: 22px;
+  .panel.hidden { display: none; }
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
   }
-  .b-info { flex: 1; min-width: 0; }
-  .b-name {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 17px;
-    line-height: 1.2;
+  .panel-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; line-height: 1; }
+  .panel-sub { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); margin-top: 2px; }
+  .panel-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-soft); padding: 4px 8px; }
+
+  .panel-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--line);
+    gap: 10px;
   }
-  .b-name .lvl {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 11px;
-    color: var(--terracotta);
-    margin-left: 6px;
-  }
-  .b-effect {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-top: 2px;
-  }
-  .b-cost {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-soft);
-    margin-top: 4px;
-  }
-  .b-cost .insufficient { color: var(--terracotta); font-weight: 700; }
-  .b-action button {
-    background: var(--ink);
-    color: var(--parchment);
-    border: none;
-    padding: 10px 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+  .panel-row:last-child { border-bottom: none; }
+  .pr-info { flex: 1; min-width: 0; }
+  .pr-name { font-weight: 600; font-size: 14px; }
+  .pr-detail { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .pr-cost { font-size: 11px; color: var(--ink-soft); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .pr-cost .bad { color: var(--rust); font-weight: 700; }
+  .pr-action button {
+    background: var(--ink); color: var(--paper);
+    border: none; padding: 8px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     cursor: pointer;
-    min-width: 70px;
   }
-  .b-action button:disabled { background: var(--parchment-dark); color: rgba(31, 26, 20, 0.35); cursor: not-allowed; }
-  .b-locked .b-icon { opacity: 0.3; }
-  .b-locked .b-name, .b-locked .b-effect { opacity: 0.4; }
+  .pr-action button:disabled { background: var(--paper-2); color: rgba(42,34,24,0.3); }
+  .pr-action button.primary { background: var(--rust); color: var(--paper); }
 
-  /* Modal (events / welcome back) */
+  /* Bottom action bar (fixed) */
+  .actionbar {
+    background: var(--ink);
+    color: var(--paper);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+  }
+  .ab-info { font-size: 11px; letter-spacing: 0.1em; }
+  .ab-info .num { font-size: 16px; font-weight: 700; }
+  .ab-end {
+    background: var(--rust); color: var(--paper);
+    border: none; padding: 12px 18px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .ab-end:disabled { background: rgba(244,236,216,0.15); color: rgba(244,236,216,0.4); }
+
+  /* Modal */
   .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(31, 26, 20, 0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    z-index: 100;
+    position: fixed; inset: 0; background: rgba(20,16,10,0.7);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px; z-index: 100;
   }
   .modal-bg.active { display: flex; }
   .modal {
-    background: var(--parchment);
-    max-width: 380px;
-    width: 100%;
-    padding: 28px 24px;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background: var(--paper); padding: 24px 22px;
+    max-width: 360px; width: 100%; max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  .modal-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--terracotta);
-    margin-bottom: 10px;
-  }
-  .modal h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 800;
-    font-size: 26px;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin-bottom: 14px;
-  }
-  .modal p { color: var(--ink-soft); font-size: 15px; margin-bottom: 18px; }
-  .modal .gains {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px 20px;
-    padding: 14px 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 18px;
-  }
-  .modal .gain-item {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-  }
-  .modal .gain-item .gv { font-weight: 700; }
-  .modal .gain-item .gv.pos { color: var(--moss-deep); }
-  .modal .gain-item .gv.neg { color: var(--terracotta-deep); }
-  .modal-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .modal-tag { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rust); margin-bottom: 8px; }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; margin-bottom: 12px; }
+  .modal p { color: var(--ink-soft); font-size: 14px; margin-bottom: 14px; line-height: 1.5; }
+  .modal .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 
   /* Toast */
   .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(120%);
-    background: var(--ink);
-    color: var(--parchment);
-    padding: 12px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    position: fixed; top: 20px; left: 50%;
+    transform: translateX(-50%) translateY(-200%);
+    background: var(--ink); color: var(--paper);
+    padding: 10px 18px; font-size: 12px; letter-spacing: 0.08em;
     transition: transform 0.4s ease;
-    z-index: 200;
-    white-space: nowrap;
+    z-index: 200; max-width: 90vw; text-align: center;
+    border-left: 3px solid var(--rust);
+    visibility: hidden;
+    pointer-events: none;
   }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.show { transform: translateX(-50%) translateY(0); visibility: visible; }
 
-  /* Footer */
-  .footer {
-    padding: 24px 20px 40px;
-    text-align: center;
+  /* Hex hover/select */
+  .hex-base { transition: opacity 0.2s; }
+  .hex-overlay { fill: none; stroke: rgba(42,34,24,0.15); stroke-width: 0.5; pointer-events: none; }
+  .hex-fog {
+    fill: var(--ink); fill-opacity: 0.85;
+    pointer-events: none;
   }
-  .footer-link {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    text-decoration: underline;
+  .hex-explored-no-vision { fill: rgba(42,34,24,0.35); pointer-events: none; }
+  .hex-selected { stroke: var(--rust); stroke-width: 1.6; fill: none; pointer-events: none; }
+  .hex-move-target { fill: rgba(74, 107, 58, 0.35); pointer-events: none; }
+  .hex-attack-target { fill: rgba(160, 72, 48, 0.45); pointer-events: none; }
+
+  /* Map labels */
+  .city-label {
+    fill: var(--paper); font-family: 'Cormorant Garamond', serif;
+    font-weight: 700; font-size: 5px; text-anchor: middle;
+    paint-order: stroke; stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round;
   }
 
-  /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .topbar, .resources, .ap-bar, .section, .building {
-    animation: fadeUp 0.4s ease backwards;
-  }
-  .building:nth-child(1) { animation-delay: 0.05s; }
-  .building:nth-child(2) { animation-delay: 0.1s; }
-  .building:nth-child(3) { animation-delay: 0.15s; }
-  .building:nth-child(4) { animation-delay: 0.2s; }
-  .building:nth-child(5) { animation-delay: 0.25s; }
-  .building:nth-child(6) { animation-delay: 0.3s; }
-  .building:nth-child(7) { animation-delay: 0.35s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .modal { animation: pop 0.3s ease backwards; }
+  .panel { animation: fadeIn 0.2s; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+  /* Tech tree mini */
+  .tech-current {
+    background: var(--paper-2); padding: 10px 12px; margin-bottom: 12px;
+    border-left: 3px solid var(--gold);
   }
-  .pulse { animation: pulse 1.5s ease infinite; }
+  .tech-current .label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
+  .tech-current .name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; margin-top: 2px; }
+  .tech-current .progress {
+    height: 4px; background: rgba(0,0,0,0.1); margin-top: 6px;
+  }
+  .tech-current .progress-bar {
+    height: 100%; background: var(--gold); transition: width 0.3s;
+  }
+  .tech-current .turns { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+  /* Scrollbar */
+  .panel::-webkit-scrollbar, .modal::-webkit-scrollbar { width: 4px; }
+  .panel::-webkit-scrollbar-thumb, .modal::-webkit-scrollbar-thumb { background: var(--ink-soft); }
 </style>
 </head>
 <body>
 
-<!-- ========== SPLASH ========== -->
-<div id="splash" class="splash">
-  <div class="crest">Ma <em>Cité</em></div>
-  <div class="tag">Une Chronique en Demi-Journées</div>
-  <p>Bâtissez, gérez, prospérez. Revenez deux fois par jour pour collecter, décider, et faire grandir votre cité à travers les âges.</p>
-  <input id="cityNameInput" type="text" placeholder="Nom de votre cité" maxlength="20">
-  <button id="startBtn" class="btn primary" disabled>Fonder la cité</button>
+<!-- ============ SPLASH / CIV CHOICE ============ -->
+<div id="splash" class="screen active">
+  <div class="hero">
+    <img src="logo-hero.png" alt="Chronique des Empires" loading="eager">
+  </div>
+
+  <div class="top">
+    <div class="title-main">Chronique<br><em>des Empires</em></div>
+    <div class="subtitle">Une partie en demi-journées</div>
+  </div>
+
+  <div>
+    <div class="choose-label">Choisissez votre civilisation</div>
+    <div class="civs" id="civsList"></div>
+
+    <button id="startBtn" class="btn primary" disabled>
+      Fonder l'empire
+    </button>
+    <button id="resumeBtn" class="btn ghost" style="margin-top: 8px; display:none;">
+      Reprendre la partie
+    </button>
+  </div>
 </div>
 
-<!-- ========== APP ========== -->
-<div id="app" class="app">
-
-  <div class="topbar">
-    <div class="topbar-row">
+<!-- ============ GAME ============ -->
+<div id="game" class="screen">
+  <div class="hud-top">
+    <div class="hud-civ">
+      <svg class="emblem-mini" id="hudEmblem" viewBox="0 0 100 100"></svg>
       <div>
-        <div class="city-name" id="cityName">—</div>
-        <div class="era-badge" id="eraBadge">Antiquité</div>
-      </div>
-      <div style="text-align: right;">
-        <div class="meta">Jour</div>
-        <div class="num" id="dayNum" style="font-size: 22px; font-weight: 700;">1</div>
+        <div class="ctitle" id="hudCivName">—</div>
+        <div class="era" id="hudEra">Antiquité</div>
       </div>
     </div>
-  </div>
-
-  <div class="resources">
-    <div class="res">
-      <div class="res-label">Or</div>
-      <div class="res-value num" id="rGold">0</div>
-      <div class="res-rate" id="rGoldRate">+0/h</div>
-    </div>
-    <div class="res">
-      <div class="res-label">Grain</div>
-      <div class="res-value num" id="rFood">0</div>
-      <div class="res-rate" id="rFoodRate">+0/h</div>
-    </div>
-    <div class="res">
-      <div class="res-label">Pierre</div>
-      <div class="res-value num" id="rStone">0</div>
-      <div class="res-rate" id="rStoneRate">+0/h</div>
-    </div>
-    <div class="res">
-      <div class="res-label">Habitants</div>
-      <div class="res-value num" id="rPop">0</div>
-      <div class="res-cap num" id="rPopCap">/0</div>
+    <div class="hud-turn">
+      <div>Tour</div>
+      <div class="num" id="hudTurn">1</div>
     </div>
   </div>
 
-  <div class="ap-bar">
-    <div>
-      <div class="ap-label">Points d'action</div>
-      <div class="ap-dots" id="apDots"></div>
+  <div class="hud-res">
+    <div class="r">
+      <div class="r-label">Or</div>
+      <div class="r-val num" id="rGold">0</div>
+      <div class="r-rate" id="rGoldRate">+0</div>
     </div>
-    <div class="ap-timer" id="apTimer">—</div>
+    <div class="r">
+      <div class="r-label">Sci.</div>
+      <div class="r-val num" id="rSci">0</div>
+      <div class="r-rate" id="rSciRate">+0</div>
+    </div>
+    <div class="r">
+      <div class="r-label">Prod.</div>
+      <div class="r-val num" id="rProd">0</div>
+      <div class="r-rate" id="rProdRate">+0</div>
+    </div>
+    <div class="r">
+      <div class="r-label">Pop.</div>
+      <div class="r-val num" id="rPop">0</div>
+    </div>
+    <div class="r">
+      <div class="r-label">Villes</div>
+      <div class="r-val num" id="rCities">0</div>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Bâtiments de la cité</div>
+  <div class="map-wrap" id="mapWrap">
+    <svg id="mapSvg" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
-  <div id="buildings"></div>
 
-  <div class="footer">
-    <button class="footer-link" id="resetBtn">Recommencer la chronique</button>
+  <!-- Bottom panel : contenu dynamique -->
+  <div class="panel hidden" id="panel"></div>
+
+  <!-- Action bar -->
+  <div class="actionbar">
+    <div class="ab-info">
+      <div style="font-size:9px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.7;">Action</div>
+      <div style="display:flex; gap:14px; margin-top:2px;">
+        <button class="btn small ghost" id="btnTech" style="color:var(--paper); border-color:var(--paper); padding:6px 10px; font-size:9px;">Recherche</button>
+        <button class="btn small ghost" id="btnCities" style="color:var(--paper); border-color:var(--paper); padding:6px 10px; font-size:9px;">Villes</button>
+        <button class="btn small ghost" id="btnMenu" style="color:var(--paper); border-color:var(--paper); padding:6px 10px; font-size:9px;">Menu</button>
+      </div>
+    </div>
+    <button class="ab-end" id="btnEndTurn">Fin de tour</button>
   </div>
 </div>
 
-<!-- ========== MODAL ========== -->
+<!-- ============ MODAL ============ -->
 <div class="modal-bg" id="modalBg">
   <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- ========== TOAST ========== -->
+<!-- ============ TOAST ============ -->
 <div class="toast" id="toast"></div>
 
-<script>
-// ===========================================================
-// CONFIG
-// ===========================================================
-const CONFIG = {
-  STORAGE_KEY: 'macite:save:v1',
-  HALF_DAY_MS: 12 * 60 * 60 * 1000,        // 12h cycle
-  AP_PER_HALF_DAY: 3,
-  OFFLINE_CAP_HOURS: 12,                   // production capée à 12h offline
-  POP_FOOD_PER_HOUR: 0.5,                  // 1 habitant mange 0.5 grain/h
-  POP_GROWTH_HOURS: 6,                     // 1 nouvel habitant toutes les 6h si conditions
-  ERAS: [
-    { name: 'Antiquité', threshold: 0 },
-    { name: 'Moyen Âge', threshold: 8 },
-    { name: 'Renaissance', threshold: 20 },
-    { name: 'Industrielle', threshold: 40 },
-    { name: 'Moderne', threshold: 70 },
-  ],
-  BUILDINGS: {
-    maison: {
-      name: 'Maisons',
-      icon: '🏠',
-      effect: lvl => `Capacité: ${5 + lvl * 4} habitants`,
-      cost: lvl => ({ stone: 15 + lvl * 10, gold: 5 + lvl * 5 }),
-      maxLevel: 20,
-      unlock: 0,
-    },
-    ferme: {
-      name: 'Ferme',
-      icon: '🌾',
-      effect: lvl => `Produit ${lvl * 4} grain/h`,
-      cost: lvl => ({ stone: 10 + lvl * 8, gold: 3 + lvl * 3 }),
-      maxLevel: 15,
-      unlock: 0,
-    },
-    carriere: {
-      name: 'Carrière',
-      icon: '⛏️',
-      effect: lvl => lvl === 0 ? 'Construire pour extraire la pierre' : `Produit ${lvl * 3} pierre/h`,
-      cost: lvl => ({ stone: 20 + lvl * 12, gold: 8 + lvl * 4 }),
-      maxLevel: 15,
-      unlock: 0,
-    },
-    marche: {
-      name: 'Marché',
-      icon: '🏛️',
-      effect: lvl => lvl === 0 ? 'Construire pour générer de l\'or' : `Produit ${lvl * 3} or/h`,
-      cost: lvl => ({ stone: 25 + lvl * 15, gold: 10 + lvl * 5 }),
-      maxLevel: 15,
-      unlock: 4, // somme des niveaux
-    },
-    bibliotheque: {
-      name: 'Bibliothèque',
-      icon: '📜',
-      effect: lvl => lvl === 0 ? 'Bonus à toute la production' : `+${lvl * 5}% de production globale`,
-      cost: lvl => ({ stone: 40 + lvl * 25, gold: 25 + lvl * 15 }),
-      maxLevel: 10,
-      unlock: 12,
-    },
-    atelier: {
-      name: 'Atelier',
-      icon: '🔨',
-      effect: lvl => lvl === 0 ? 'Réduit le coût des constructions' : `−${lvl * 4}% sur tous les coûts`,
-      cost: lvl => ({ stone: 35 + lvl * 20, gold: 20 + lvl * 12 }),
-      maxLevel: 10,
-      unlock: 18,
-    },
-    temple: {
-      name: 'Temple',
-      icon: '🏯',
-      effect: lvl => lvl === 0 ? 'Accélère la croissance des habitants' : `+${lvl * 15}% de croissance démographique`,
-      cost: lvl => ({ stone: 50 + lvl * 30, gold: 30 + lvl * 20 }),
-      maxLevel: 8,
-      unlock: 25,
-    },
-  },
-  EVENTS: [
-    {
-      id: 'merchant',
-      tag: 'Visiteur',
-      title: 'Un marchand voyageur',
-      text: 'Un marchand propose un échange : 30 pierre contre 20 or.',
-      condition: s => s.resources.stone >= 30,
-      choices: [
-        { label: 'Accepter le marché', apply: s => { s.resources.stone -= 30; s.resources.gold += 20; return 'Marché conclu : −30 pierre, +20 or'; } },
-        { label: 'Refuser poliment', apply: s => 'Le marchand poursuit sa route.' },
-      ],
-    },
-    {
-      id: 'harvest',
-      tag: 'Saison',
-      title: 'Une récolte exceptionnelle',
-      text: 'Vos paysans rapportent plus de grain que prévu cette saison.',
-      condition: s => (s.buildings.ferme || 0) >= 1,
-      choices: [
-        { label: 'Stocker la récolte', apply: s => { const g = 30 + (s.buildings.ferme || 0) * 8; s.resources.food += g; return `+${g} grain ajoutés aux greniers`; } },
-        { label: 'Festoyer (+1 PA)', apply: s => { s.actionPoints = Math.min(CONFIG.AP_PER_HALF_DAY + 1, s.actionPoints + 1); return 'Le peuple est ravi : +1 point d\'action'; } },
-      ],
-    },
-    {
-      id: 'storm',
-      tag: 'Calamité',
-      title: 'Une tempête frappe',
-      text: 'Le vent emporte des matériaux.',
-      condition: s => s.resources.stone >= 15,
-      choices: [
-        { label: 'Encaisser les pertes', apply: s => { const loss = Math.min(15, s.resources.stone); s.resources.stone -= loss; return `−${loss} pierre emportés par le vent`; } },
-        { label: 'Payer pour réparer (15 or)', apply: s => { if (s.resources.gold >= 15) { s.resources.gold -= 15; return 'Les dégâts sont évités : −15 or'; } else { const loss = Math.min(15, s.resources.stone); s.resources.stone -= loss; return `Pas assez d'or : −${loss} pierre`; } } },
-      ],
-    },
-    {
-      id: 'scholar',
-      tag: 'Visiteur',
-      title: 'Un érudit de passage',
-      text: 'Un savant offre ses connaissances en échange du gîte.',
-      condition: s => s.resources.gold >= 10,
-      choices: [
-        { label: 'Accueillir (10 or)', apply: s => { s.resources.gold -= 10; s.resources.food += 10; s.resources.stone += 10; return '+10 grain, +10 pierre offerts en remerciement'; } },
-        { label: 'Décliner', apply: s => 'L\'érudit s\'en va.' },
-      ],
-    },
-    {
-      id: 'baby',
-      tag: 'Démographie',
-      title: 'Une vague de naissances',
-      text: 'Plusieurs familles agrandissent leur foyer.',
-      condition: s => s.resources.pop < computeMaxPop(s),
-      choices: [
-        { label: 'S\'en réjouir', apply: s => { const cap = computeMaxPop(s); const room = cap - s.resources.pop; const gain = Math.min(2, room); s.resources.pop += gain; return `+${gain} habitant${gain > 1 ? 's' : ''}`; } },
-      ],
-    },
-  ],
-};
-
-// ===========================================================
-// STATE
-// ===========================================================
-let state = null;
-
-function makeFreshState(cityName) {
-  return {
-    cityName,
-    createdAt: Date.now(),
-    lastUpdate: Date.now(),
-    lastApReset: Date.now(),
-    day: 1,
-    actionPoints: CONFIG.AP_PER_HALF_DAY,
-    resources: { gold: 20, food: 30, stone: 30, pop: 5 },
-    buildings: { maison: 1, ferme: 1, carriere: 0, marche: 0, bibliotheque: 0, atelier: 0, temple: 0 },
-    pendingEvent: null,
-    eventHistory: [],
-  };
-}
-
-// ===========================================================
-// STORAGE (localStorage pour PWA hébergée)
-// ===========================================================
-async function loadState() {
-  try {
-    const v = localStorage.getItem(CONFIG.STORAGE_KEY);
-    if (v) return JSON.parse(v);
-  } catch (e) { /* clé absente ou parse error */ }
-  return null;
-}
-async function saveState() {
-  try {
-    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));
-  } catch (e) { console.error('Save failed', e); }
-}
-async function deleteState() {
-  try { localStorage.removeItem(CONFIG.STORAGE_KEY); } catch (e) {}
-}
-
-// ===========================================================
-// COMPUTATIONS
-// ===========================================================
-function getEra(s) {
-  let era = CONFIG.ERAS[0];
-  const sum = sumLevels(s);
-  for (const e of CONFIG.ERAS) {
-    if (sum >= e.threshold) era = e;
-  }
-  return era;
-}
-function sumLevels(s) {
-  return Object.values(s.buildings).reduce((a, b) => a + b, 0);
-}
-function libraryBonus(s) { return 1 + (s.buildings.bibliotheque || 0) * 0.05; }
-function workshopDiscount(s) { return Math.max(0.5, 1 - (s.buildings.atelier || 0) * 0.04); }
-function templeBonus(s) { return 1 + (s.buildings.temple || 0) * 0.15; }
-
-function productionPerHour(s) {
-  const bonus = libraryBonus(s);
-  return {
-    gold: (s.buildings.marche || 0) * 3 * bonus,
-    food: (s.buildings.ferme || 0) * 4 * bonus - s.resources.pop * CONFIG.POP_FOOD_PER_HOUR,
-    stone: (s.buildings.carriere || 0) * 3 * bonus,
-  };
-}
-function computeMaxPop(s) { return 5 + (s.buildings.maison || 0) * 4; }
-function computeCost(s, key) {
-  const b = CONFIG.BUILDINGS[key];
-  const lvl = s.buildings[key];
-  const raw = b.cost(lvl);
-  const d = workshopDiscount(s);
-  return { stone: Math.ceil(raw.stone * d), gold: Math.ceil(raw.gold * d) };
-}
-function isUnlocked(s, key) {
-  return sumLevels(s) >= CONFIG.BUILDINGS[key].unlock;
-}
-
-// ===========================================================
-// TIME PROGRESSION (offline gains, AP reset, pop growth)
-// ===========================================================
-function tickProgression(s) {
-  const now = Date.now();
-  const elapsedMs = now - s.lastUpdate;
-  const elapsedHoursReal = elapsedMs / 3600000;
-  const cappedHours = Math.min(elapsedHoursReal, CONFIG.OFFLINE_CAP_HOURS);
-
-  const gains = { gold: 0, food: 0, stone: 0, popGain: 0, popLost: 0 };
-
-  if (cappedHours > 0) {
-    const rates = productionPerHour(s);
-    const dGold = rates.gold * cappedHours;
-    const dStone = rates.stone * cappedHours;
-    // food peut être négatif (consommation > production)
-    const farmRaw = (s.buildings.ferme || 0) * 4 * libraryBonus(s);
-    const eaten = s.resources.pop * CONFIG.POP_FOOD_PER_HOUR;
-    const dFood = (farmRaw - eaten) * cappedHours;
-
-    s.resources.gold = Math.max(0, s.resources.gold + dGold);
-    s.resources.stone = Math.max(0, s.resources.stone + dStone);
-    s.resources.food = s.resources.food + dFood;
-    gains.gold = dGold;
-    gains.stone = dStone;
-    gains.food = dFood;
-
-    // famine : si food < 0, on perd des habitants
-    if (s.resources.food < 0) {
-      const deficit = -s.resources.food;
-      const lostPop = Math.min(s.resources.pop, Math.floor(deficit / 5));
-      if (lostPop > 0) {
-        s.resources.pop -= lostPop;
-        gains.popLost = lostPop;
-      }
-      s.resources.food = 0;
-    }
-
-    // croissance démographique
-    const cap = computeMaxPop(s);
-    if (s.resources.pop < cap && s.resources.food > 5) {
-      const growthRate = templeBonus(s) / CONFIG.POP_GROWTH_HOURS; // habitants/h
-      const dPop = Math.floor(growthRate * cappedHours);
-      const room = cap - s.resources.pop;
-      const realGain = Math.min(dPop, room);
-      if (realGain > 0) {
-        s.resources.pop += realGain;
-        gains.popGain = realGain;
-      }
-    }
-  }
-
-  // jour: 1 jour = 24h depuis création
-  s.day = Math.max(1, Math.floor((now - s.createdAt) / 86400000) + 1);
-
-  // Reset AP toutes les 12h
-  const apElapsed = now - s.lastApReset;
-  if (apElapsed >= CONFIG.HALF_DAY_MS) {
-    const cycles = Math.floor(apElapsed / CONFIG.HALF_DAY_MS);
-    s.actionPoints = CONFIG.AP_PER_HALF_DAY;
-    s.lastApReset = s.lastApReset + cycles * CONFIG.HALF_DAY_MS;
-  }
-
-  s.lastUpdate = now;
-
-  // Event aléatoire si pas d'event en cours et 25% de chance
-  if (!s.pendingEvent && elapsedHoursReal > 1 && Math.random() < 0.5) {
-    const eligible = CONFIG.EVENTS.filter(e => e.condition(s));
-    if (eligible.length > 0) {
-      const ev = eligible[Math.floor(Math.random() * eligible.length)];
-      s.pendingEvent = ev.id;
-    }
-  }
-
-  return { gains, elapsedHoursReal, cappedHours };
-}
-
-// ===========================================================
-// RENDER
-// ===========================================================
-function $(id) { return document.getElementById(id); }
-
-function render() {
-  $('cityName').textContent = state.cityName;
-  $('eraBadge').textContent = getEra(state).name;
-  $('dayNum').textContent = state.day;
-
-  // resources
-  $('rGold').textContent = Math.floor(state.resources.gold);
-  $('rFood').textContent = Math.floor(state.resources.food);
-  $('rStone').textContent = Math.floor(state.resources.stone);
-  $('rPop').textContent = state.resources.pop;
-  $('rPopCap').textContent = '/ ' + computeMaxPop(state);
-
-  const rates = productionPerHour(state);
-  const fmt = (v) => (v >= 0 ? '+' : '') + v.toFixed(1) + '/h';
-  $('rGoldRate').textContent = fmt(rates.gold);
-  $('rFoodRate').textContent = fmt(rates.food);
-  $('rFoodRate').className = 'res-rate' + (rates.food < 0 ? ' bad' : '');
-  $('rStoneRate').textContent = fmt(rates.stone);
-
-  // AP dots
-  const dotsEl = $('apDots');
-  dotsEl.innerHTML = '';
-  const maxAP = Math.max(CONFIG.AP_PER_HALF_DAY, state.actionPoints);
-  for (let i = 0; i < maxAP; i++) {
-    const d = document.createElement('div');
-    d.className = 'ap-dot' + (i < state.actionPoints ? ' full' : '');
-    dotsEl.appendChild(d);
-  }
-  // timer
-  const nextReset = state.lastApReset + CONFIG.HALF_DAY_MS;
-  const remaining = nextReset - Date.now();
-  if (state.actionPoints >= CONFIG.AP_PER_HALF_DAY) {
-    $('apTimer').textContent = '—';
-  } else {
-    const h = Math.max(0, Math.floor(remaining / 3600000));
-    const m = Math.max(0, Math.floor((remaining % 3600000) / 60000));
-    $('apTimer').textContent = `Renouvelle dans ${h}h${String(m).padStart(2, '0')}`;
-  }
-
-  // buildings
-  const list = $('buildings');
-  list.innerHTML = '';
-  for (const [key, def] of Object.entries(CONFIG.BUILDINGS)) {
-    const lvl = state.buildings[key];
-    const unlocked = isUnlocked(state, key);
-    const cost = computeCost(state, key);
-    const maxed = lvl >= def.maxLevel;
-
-    const row = document.createElement('div');
-    row.className = 'building' + (!unlocked ? ' b-locked' : '');
-
-    const icon = `<div class="b-icon">${unlocked ? def.icon : '🔒'}</div>`;
-    let infoHtml;
-    if (!unlocked) {
-      infoHtml = `<div class="b-info">
-        <div class="b-name">${def.name}</div>
-        <div class="b-effect">Débloque à ${def.unlock} niveaux totaux (vous: ${sumLevels(state)})</div>
-      </div>`;
-    } else {
-      const goldOk = state.resources.gold >= cost.gold;
-      const stoneOk = state.resources.stone >= cost.stone;
-      const apOk = state.actionPoints >= 1;
-      infoHtml = `<div class="b-info">
-        <div class="b-name">${def.name}<span class="lvl">N. ${lvl}</span></div>
-        <div class="b-effect">${def.effect(lvl)}</div>
-        ${maxed ? '<div class="b-cost">Niveau maximum atteint</div>' :
-          `<div class="b-cost">Coût : <span class="${stoneOk ? '' : 'insufficient'}">${cost.stone} pierre</span> · <span class="${goldOk ? '' : 'insufficient'}">${cost.gold} or</span> · <span class="${apOk ? '' : 'insufficient'}">1 PA</span></div>`}
-      </div>`;
-    }
-
-    let btnHtml = '';
-    if (unlocked) {
-      const can = canBuild(key);
-      const label = lvl === 0 ? 'Construire' : 'Améliorer';
-      btnHtml = `<div class="b-action"><button data-key="${key}" ${can || maxed ? '' : 'disabled'} ${maxed ? 'disabled' : ''}>${maxed ? '∞' : label}</button></div>`;
-    }
-
-    row.innerHTML = icon + infoHtml + btnHtml;
-    list.appendChild(row);
-  }
-
-  list.querySelectorAll('button[data-key]').forEach(btn => {
-    btn.addEventListener('click', () => doBuild(btn.dataset.key));
-  });
-}
-
-function canBuild(key) {
-  const lvl = state.buildings[key];
-  const def = CONFIG.BUILDINGS[key];
-  if (lvl >= def.maxLevel) return false;
-  if (state.actionPoints < 1) return false;
-  const cost = computeCost(state, key);
-  return state.resources.gold >= cost.gold && state.resources.stone >= cost.stone;
-}
-
-async function doBuild(key) {
-  if (!canBuild(key)) return;
-  const cost = computeCost(state, key);
-  state.resources.gold -= cost.gold;
-  state.resources.stone -= cost.stone;
-  state.buildings[key] += 1;
-  state.actionPoints -= 1;
-  await saveState();
-  render();
-  toast(`${CONFIG.BUILDINGS[key].name} → niveau ${state.buildings[key]}`);
-}
-
-// ===========================================================
-// MODALS
-// ===========================================================
-function showModal(html, actions) {
-  const bg = $('modalBg'), c = $('modalContent');
-  c.innerHTML = html + '<div class="modal-actions" id="modalActions"></div>';
-  const wrap = $('modalActions');
-  actions.forEach(a => {
-    const b = document.createElement('button');
-    b.className = a.primary ? 'btn primary' : 'btn ghost';
-    b.textContent = a.label;
-    b.addEventListener('click', () => {
-      bg.classList.remove('active');
-      a.handler && a.handler();
-    });
-    wrap.appendChild(b);
-  });
-  bg.classList.add('active');
-}
-
-function showWelcomeBack(progressionResult) {
-  const { gains, elapsedHoursReal, cappedHours } = progressionResult;
-  if (elapsedHoursReal < 0.05) return false; // moins de 3 minutes, on saute
-
-  const cap = elapsedHoursReal > CONFIG.OFFLINE_CAP_HOURS;
-  const hoursDisplay = elapsedHoursReal < 1
-    ? `${Math.round(elapsedHoursReal * 60)} minutes`
-    : `${elapsedHoursReal.toFixed(1)} heures`;
-
-  const items = [];
-  if (Math.abs(gains.gold) >= 0.5) items.push({ label: 'Or', val: gains.gold });
-  if (Math.abs(gains.food) >= 0.5) items.push({ label: 'Grain', val: gains.food });
-  if (Math.abs(gains.stone) >= 0.5) items.push({ label: 'Pierre', val: gains.stone });
-  if (gains.popGain > 0) items.push({ label: 'Habitants', val: gains.popGain, int: true });
-  if (gains.popLost > 0) items.push({ label: 'Habitants perdus', val: -gains.popLost, int: true });
-
-  if (items.length === 0) return false;
-
-  const itemsHtml = items.map(it => {
-    const v = it.int ? Math.round(it.val) : Math.round(it.val);
-    const cls = v > 0 ? 'pos' : 'neg';
-    const sign = v >= 0 ? '+' : '';
-    return `<div class="gain-item"><span>${it.label}</span><span class="gv ${cls}">${sign}${v}</span></div>`;
-  }).join('');
-
-  const html = `
-    <div class="modal-tag">Vous étiez parti${elapsedHoursReal > 1 ? 'e' : ''} ${hoursDisplay}</div>
-    <h2>Bon retour à ${state.cityName}</h2>
-    <p>Voici ce qui s'est passé pendant votre absence${cap ? ' (production plafonnée à 12h, pensez à revenir)' : ''}.</p>
-    <div class="gains">${itemsHtml}</div>
-  `;
-  showModal(html, [{ label: 'Reprendre la chronique', primary: true }]);
-  return true;
-}
-
-function showEvent(eventId) {
-  const ev = CONFIG.EVENTS.find(e => e.id === eventId);
-  if (!ev) { state.pendingEvent = null; return; }
-  const html = `
-    <div class="modal-tag">${ev.tag}</div>
-    <h2>${ev.title}</h2>
-    <p>${ev.text}</p>
-  `;
-  const actions = ev.choices.map((c, i) => ({
-    label: c.label,
-    primary: i === 0,
-    handler: async () => {
-      const msg = c.apply(state);
-      state.pendingEvent = null;
-      await saveState();
-      render();
-      toast(msg);
-    }
-  }));
-  showModal(html, actions);
-}
-
-// ===========================================================
-// TOAST
-// ===========================================================
-let toastTimer;
-function toast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
-}
-
-// ===========================================================
-// BOOT
-// ===========================================================
-async function boot() {
-  state = await loadState();
-  if (!state) {
-    showSplash();
-    return;
-  }
-  startGame(false);
-}
-
-function showSplash() {
-  $('splash').style.display = 'flex';
-  $('app').classList.remove('active');
-  const input = $('cityNameInput');
-  const btn = $('startBtn');
-  input.value = '';
-  input.focus();
-  input.addEventListener('input', () => {
-    btn.disabled = input.value.trim().length < 2;
-  });
-  btn.addEventListener('click', async () => {
-    const name = input.value.trim();
-    if (name.length < 2) return;
-    state = makeFreshState(name);
-    await saveState();
-    $('splash').style.display = 'none';
-    startGame(true);
-  }, { once: true });
-}
-
-function startGame(isFresh) {
-  $('app').classList.add('active');
-  const result = isFresh ? null : tickProgression(state);
-  render();
-
-  // welcome back ?
-  let shownWelcome = false;
-  if (result) shownWelcome = showWelcomeBack(result);
-
-  // event après le welcome
-  if (state.pendingEvent) {
-    setTimeout(() => showEvent(state.pendingEvent), shownWelcome ? 600 : 200);
-  }
-
-  // tick périodique pour mettre à jour l'affichage
-  setInterval(async () => {
-    tickProgression(state);
-    await saveState();
-    render();
-  }, 30000); // toutes les 30s
-
-  // bouton reset
-  $('resetBtn').addEventListener('click', async () => {
-    if (confirm('Effacer la chronique et recommencer ?')) {
-      await deleteState();
-      location.reload();
-    }
-  });
-
-  // sauvegarde quand on quitte la page
-  window.addEventListener('beforeunload', () => {
-    state.lastUpdate = Date.now();
-    // saveState est async, ne sera peut-être pas atteint, mais on essaie
-    saveState();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      state.lastUpdate = Date.now();
-      saveState();
-    }
-  });
-}
-
-boot();
-
-// Service worker pour mode hors-ligne
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW reg failed', err));
-  });
-}
-</script>
+<!-- Le code JS sera dans un fichier séparé pour la clarté -->
+<script src="game.js"></script>
 </body>
 </html>
